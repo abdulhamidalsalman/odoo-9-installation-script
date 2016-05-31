@@ -10,7 +10,7 @@ The added commands do:<br />
 
 
 
-Below are the lines of code copied from aschenkels-ictstudio script. 
+<strong>Below are the lines of code copied from aschenkels-ictstudio script:<strong/>
 ```
 sudo apt-get install -y locales
 sudo export LANGUAGE=en_US.UTF-8
