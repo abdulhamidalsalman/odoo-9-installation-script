@@ -9,9 +9,7 @@ The added commands do:
 
 
 Below are the lines of code copied from aschenkels-ictstudio script. 
-#--------------------------------------------------
-# Install PostgreSQL Server
-#--------------------------------------------------
+--------------------------------------------------
 sudo apt-get install -y locales
 sudo export LANGUAGE=en_US.UTF-8
 sudo export LANG=en_US.UTF-8
@@ -23,3 +21,4 @@ echo -e "\n---- PostgreSQL $PG_VERSION Settings  ----"
 sudo sed -i s/"#listen_addresses = 'localhost'"/"listen_addresses = '*'"/g /etc/postgresql/9.4/main/postgresql.conf
 
 sudo service postgresql restart
+--------------------------------------------------
