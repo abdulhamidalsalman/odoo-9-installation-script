@@ -7,7 +7,21 @@ The added commands do:<br />
 2. make postgres server listens to requests from any TCP/IP address.<br />
 3. restart postgres server to apply the modifications above<br />
 
+This script can be safely used in a multi-odoo code base server because the default Odoo port is changed BEFORE the Odoo is started.
 
+<h3>Installation procedure</h3>
+1. Download the script:
+```
+sudo wget https://raw.githubusercontent.com/Yenthe666/InstallScript/9.0/odoo_install.sh
+```
+2. Make the script executable:
+```
+sudo chmod +x odoo_install.sh
+```
+3. Execute the script:
+```
+sudo ./odoo_install.sh
+```
 
 
 <strong>Below are the lines of code copied from aschenkels-ictstudio script:<strong/>
