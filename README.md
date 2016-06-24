@@ -1,6 +1,6 @@
 # odoo-9-installation-script
 
-This script adds more but do not modify the version of Yenthe666. In facts, it combines the best of aschenkels-ictstudio & Yethe666 odoo 9 installation scripts. It uses Yenthe666 script as a templete and adds view commands from aschenkels-ictstudio script for postgres. 
+This script combines the best parts of aschenkels-ictstudio & Yethe666 odoo 9 installation scripts. I used Yethe666 as template and added few commands from aschenkel-sictstudio.
 
 The added commands do:<br />
 1. make UTF-8 the default language for postgres <br />
