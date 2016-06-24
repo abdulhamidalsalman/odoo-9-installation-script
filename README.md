@@ -12,7 +12,7 @@ This script can be safely used in a multi-odoo code base server because the defa
 <h3>Installation procedure</h3>
 1. Download the script:
 ```
-sudo wget  https://github.com/abdulhamidalsalman/odoo-9-installation-script/odoo_install.sh 
+sudo wget  https://github.com/abdulhamidalsalman/odoo-9-installation-script.git
 ```
 2. Make the script executable:
 ```
