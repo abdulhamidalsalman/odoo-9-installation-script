@@ -14,30 +14,30 @@
 # Execute the script to install Odoo:
 # ./odoo-install
 ################################################################################
- 
-##fixed parameters
-#odoo
+
+#--------------------------------------------------
+# Fixed Parameters
+#--------------------------------------------------
 OE_USER="odoo"
 OE_HOME="/$OE_USER"
 OE_HOME_EXT="/$OE_USER/${OE_USER}-server"
-#The default port where this Odoo instance will run under (provided you use the command -c in the terminal)
-#Set to true if you want to install it, false if you don't need it or have it already installed.
-INSTALL_WKHTMLTOPDF="True"
-#Set the default Odoo port (you still have to use -c /etc/odoo-server.conf for example to use this.)
+
+
+#Choose the port on which your Odoo should run (xmlrpc-port)
 OE_PORT="8069"
-#Choose the Odoo version which you want to install. For example: 9.0, 8.0, 7.0 or saas-6. When using 'trunk' the master version will be installed.
-#IMPORTANT! This script contains extra libraries that are specifically needed for Odoo 9.0
+
 #Enter version for checkout "9.0" for version 9.0,"8.0" for version 8.0, "7.0 (version 7), "master" for trunk
 OE_VERSION="9.0"
+
 #set the superadmin password
 OE_SUPERADMIN="admin"
 OE_CONFIG="${OE_USER}-server"
 
-##
-###  WKHTMLTOPDF download links
-## === Ubuntu Trusty x64 & x32 === (for other distributions please replace these two links,
-## in order to have correct version of wkhtmltox installed, for a danger note refer to 
-## https://www.odoo.com/documentation/8.0/setup/install.html#deb ):
+#--------------------------------------------------
+# WKHTMLTOPDF
+# Ubuntu download links Trusty x64 & x32 === (for other distributions please replace these two links in order to have correct version of wkhtmltox installed, for a danger note refer to  https://www.odoo.com/documentation/8.0/setup/install.html#deb ):
+#--------------------------------------------------
+INSTALL_WKHTMLTOPDF="True"
 WKHTMLTOX_X64=http://download.gna.org/wkhtmltopdf/0.12/0.12.1/wkhtmltox-0.12.1_linux-trusty-amd64.deb
 WKHTMLTOX_X32=http://download.gna.org/wkhtmltopdf/0.12/0.12.1/wkhtmltox-0.12.1_linux-trusty-i386.deb
 
@@ -52,6 +52,7 @@ sudo apt-get install -y locales
 #--------------------------------------------------
 # Install PostgreSQL Server
 #--------------------------------------------------
+echo -e "\n---- Updating Locales ----"
 sudo export LANGUAGE=en_US.UTF-8
 sudo export LANG=en_US.UTF-8
 sudo export LC_ALL=en_US.UTF-8
@@ -75,6 +76,7 @@ sudo service postgresql restart
 
 echo -e "\n---- Create ODOO system user ----"
 sudo adduser --system --quiet --shell=/bin/bash --home=$OE_HOME --gecos 'ODOO' --group $OE_USER
+
 #The user should also be added to the sudo'ers group.
 sudo adduser $OE_USER sudo
 
@@ -86,7 +88,7 @@ sudo chown $OE_USER:$OE_USER /var/log/$OE_USER
 # Install Dependencies
 #--------------------------------------------------
 echo -e "\n---- Install tool packages ----"
-sudo apt-get install wget subversion git bzr bzrtools python-pip gdebi-core -y
+sudo apt-get install wget subversion git bzr bzrtools python-pip python-imaging python-setuptools python-dev libxslt-dev libxml2-dev libldap2-dev libsasl2-dev gdebi-core -y
 	
 echo -e "\n---- Install python packages ----"
 sudo apt-get install python-dateutil python-feedparser python-ldap python-libxslt1 python-lxml python-mako python-openid python-psycopg2 python-pybabel python-pychart python-pydot python-pyparsing python-reportlab python-simplejson python-tz python-vatnumber python-vobject python-webdav python-werkzeug python-xlwt python-yaml python-zsi python-docutils python-psutil python-mock python-unittest2 python-jinja2 python-pypdf python-decorator python-requests python-passlib python-pil -y
@@ -142,10 +144,16 @@ sudo chown $OE_USER:$OE_USER /etc/${OE_CONFIG}.conf
 sudo chmod 640 /etc/${OE_CONFIG}.conf
 
 echo -e "* Change server config file"
-sudo sed -i s/"db_user = .*"/"db_user = $OE_USER"/g /etc/${OE_CONFIG}.conf
-sudo sed -i s/"; admin_passwd.*"/"admin_passwd = $OE_SUPERADMIN"/g /etc/${OE_CONFIG}.conf
-sudo su root -c "echo 'logfile = /var/log/$OE_USER/$OE_CONFIG$1.log' >> /etc/${OE_CONFIG}.conf"
-sudo su root -c "echo 'addons_path=$OE_HOME_EXT/addons,$OE_HOME/custom/addons' >> /etc/${OE_CONFIG}.conf"
+echo -e "** Remove unwanted lines"
+sudo sed -i "/db_user/d" /etc/$OE_CONFIG.conf
+sudo sed -i "/admin_passwd/d" /etc/$OE_CONFIG.conf
+sudo sed -i "/addons_path/d" /etc/$OE_CONFIG.conf
+
+echo -e "** Add correct lines"
+sudo su root -c "echo 'db_user = $OE_USER' >> /etc/$OE_CONFIG.conf"
+sudo su root -c "echo 'admin_passwd = $OE_SUPERADMIN' >> /etc/$OE_CONFIG.conf"
+sudo su root -c "echo 'logfile = /var/log/$OE_USER/$OE_CONFIG$1.log' >> /etc/$OE_CONFIG.conf"
+sudo su root -c "echo 'addons_path=$OE_HOME_EXT/addons,$OE_HOME/custom/addons' >> /etc/$OE_CONFIG.conf"
 
 echo -e "* Create startup file"
 sudo su root -c "echo '#!/bin/sh' >> $OE_HOME_EXT/start.sh"
@@ -174,16 +182,12 @@ PATH=/bin:/sbin:/usr/bin
 DAEMON=$OE_HOME_EXT/openerp-server
 NAME=$OE_CONFIG
 DESC=$OE_CONFIG
-
 # Specify the user name (Default: odoo).
 USER=$OE_USER
-
 # Specify an alternate config file (Default: /etc/openerp-server.conf).
 CONFIGFILE="/etc/${OE_CONFIG}.conf"
-
 # pidfile
 PIDFILE=/var/run/\${NAME}.pid
-
 # Additional options that are passed to the Daemon.
 DAEMON_OPTS="-c \$CONFIGFILE"
 [ -x \$DAEMON ] || exit 0
@@ -194,7 +198,6 @@ pid=\`cat \$PIDFILE\`
 [ -d /proc/\$pid ] && return 0
 return 1
 }
-
 case "\${1}" in
 start)
 echo -n "Starting \${DESC}: "
@@ -209,7 +212,6 @@ start-stop-daemon --stop --quiet --pidfile \$PIDFILE \
 --oknodo
 echo "\${NAME}."
 ;;
-
 restart|force-reload)
 echo -n "Restarting \${DESC}: "
 start-stop-daemon --stop --quiet --pidfile \$PIDFILE \
@@ -225,7 +227,6 @@ N=/etc/init.d/\$NAME
 echo "Usage: \$NAME {start|stop|restart|force-reload}" >&2
 exit 1
 ;;
-
 esac
 exit 0
 EOF
@@ -243,6 +244,7 @@ sudo update-rc.d $OE_CONFIG defaults
 
 echo -e "* Starting Odoo Service"
 sudo su root -c "/etc/init.d/$OE_CONFIG start"
+
 echo "-----------------------------------------------------------"
 echo "Done! The Odoo server is up and running. Specifications:"
 echo "Port: $OE_PORT"
